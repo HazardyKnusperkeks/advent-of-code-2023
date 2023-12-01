@@ -1,5 +1,8 @@
+#include "challenge1.hpp"
+
 #include <charconv>
 #include <cstring>
+#include <exception>
 #include <filesystem>
 #include <iostream>
 #include <span>
@@ -36,12 +39,19 @@ int main(int argc, char* argv[]) {
             continue;
         } //if ( result.ec != std::errc{} )
 
-        switch ( challenge ) {
-            default : {
-                std::cerr << "Challenge " << challenge << " is not known!\n";
-                break;
-            } //default
-        } //switch ( challenge )
+        try {
+            switch ( challenge ) {
+                case 1  : challenge1(dataDirectory); break;
+
+                default : {
+                    std::cerr << "Challenge " << challenge << " is not known!\n";
+                    break;
+                } //default
+            } //switch ( challenge )
+        } //try
+        catch ( const std::exception& e ) {
+            std::cerr << "Skipping Challenge " << challenge << ": " << e.what() << '\n';
+        } //catch ( const std::exception& e)
     } //for ( const auto& input : inputs )
 
     return 0;

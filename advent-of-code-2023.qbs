@@ -7,7 +7,11 @@ Project {
 
     CppApplication {
         consoleApplication: true
-        files: "main.cpp"
+        files: [
+            "challenge1.cpp",
+            "challenge1.hpp",
+            "main.cpp",
+        ]
 
         Depends { name: "AllWarnings" }
         Depends { name: "cpp" }
