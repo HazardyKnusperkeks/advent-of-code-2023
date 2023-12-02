@@ -3,16 +3,13 @@
 #include <algorithm>
 #include <array>
 #include <format>
-#include <fstream>
 #include <functional>
 #include <iomanip>
 #include <iostream>
-#include <iterator>
 #include <limits>
 #include <ranges>
 #include <stdexcept>
 #include <string_view>
-#include <utility>
 
 using namespace std::string_view_literals;
 
@@ -83,26 +80,8 @@ int digifierWithStrings(std::string_view input) noexcept {
 }
 } //namespace
 
-void challenge1(const std::filesystem::path& dataDirectory) {
-    const auto inputFilePath = dataDirectory / "1.txt";
-
-    if ( !std::filesystem::exists(inputFilePath) ) {
-        throw std::runtime_error{std::format("\"{:s}\" does not exist!", inputFilePath.c_str())};
-    } //if ( !std::filesystem::exists(inputFilePath) )
-
-    if ( !std::filesystem::is_regular_file(inputFilePath) ) {
-        throw std::runtime_error{std::format("\"{:s}\" is not a file!", inputFilePath.c_str())};
-    } //if ( !std::filesystem::is_regular_file(inputFilePath) )
-
-    std::ifstream inputFile{inputFilePath};
-
-    if ( !inputFile ) {
-        throw std::runtime_error{std::format("Could not open \"{:s}\"!", inputFilePath.c_str())};
-    } //if ( !inputFile )
-
+void challenge1(const std::vector<std::string>& input) {
     std::cout << " == Starting Challenge 1 ==\n";
-    std::vector<std::string> input;
-    std::ranges::copy(std::views::istream<std::string>(inputFile), std::back_inserter(input));
 
     auto       digified1 = input | std::views::transform(digifier);
     const auto sum1      = std::ranges::fold_left(digified1, 0, std::plus<>{});

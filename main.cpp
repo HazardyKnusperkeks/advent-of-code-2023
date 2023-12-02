@@ -1,11 +1,18 @@
 #include "challenge1.hpp"
 
+#include <algorithm>
 #include <charconv>
 #include <cstring>
 #include <exception>
 #include <filesystem>
+#include <format>
+#include <fstream>
 #include <iostream>
+#include <iterator>
+#include <ranges>
 #include <span>
+#include <string>
+#include <vector>
 
 /**
  * @brief Hauptfunktion.
@@ -28,7 +35,8 @@ int main(int argc, char* argv[]) {
         return -2;
     } //if ( !std::filesystem::exists(dataDirectory) )
 
-    const std::span inputs{argv + 2, argv + argc};
+    const std::span          inputs{argv + 2, argv + argc};
+    std::vector<std::string> challengeInput;
 
     for ( const auto& input : inputs ) {
         int        challenge;
@@ -39,9 +47,28 @@ int main(int argc, char* argv[]) {
             continue;
         } //if ( result.ec != std::errc{} )
 
+        const auto inputFilePath = dataDirectory / std::format("{:d}.txt", challenge);
+
         try {
+            if ( !std::filesystem::exists(inputFilePath) ) {
+                throw std::runtime_error{std::format("\"{:s}\" does not exist!", inputFilePath.c_str())};
+            } //if ( !std::filesystem::exists(inputFilePath) )
+
+            if ( !std::filesystem::is_regular_file(inputFilePath) ) {
+                throw std::runtime_error{std::format("\"{:s}\" is not a file!", inputFilePath.c_str())};
+            } //if ( !std::filesystem::is_regular_file(inputFilePath) )
+
+            std::ifstream inputFile{inputFilePath};
+
+            if ( !inputFile ) {
+                throw std::runtime_error{std::format("Could not open \"{:s}\"!", inputFilePath.c_str())};
+            } //if ( !inputFile )
+
+            challengeInput.clear();
+            std::ranges::copy(std::views::istream<std::string>(inputFile), std::back_inserter(challengeInput));
+
             switch ( challenge ) {
-                case 1  : challenge1(dataDirectory); break;
+                case 1  : challenge1(challengeInput); break;
 
                 default : {
                     std::cerr << "Challenge " << challenge << " is not known!\n";

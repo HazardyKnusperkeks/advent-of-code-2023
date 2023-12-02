@@ -1,8 +1,9 @@
 #ifndef CHALLENGE1_HPP
 #define CHALLENGE1_HPP
 
-#include <filesystem>
+#include <string>
+#include <vector>
 
-void challenge1(const std::filesystem::path& dataDirectory);
+void challenge1(const std::vector<std::string>& input);
 
 #endif //CHALLENGE1_HPP
