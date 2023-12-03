@@ -1,4 +1,5 @@
 #include "challenge1.hpp"
+#include "challenge2.hpp"
 
 #include <algorithm>
 #include <charconv>
@@ -69,6 +70,7 @@ int main(int argc, char* argv[]) {
 
             switch ( challenge ) {
                 case 1  : challenge1(challengeInput); break;
+                case 2  : challenge2(challengeInput); break;
 
                 default : {
                     std::cerr << "Challenge " << challenge << " is not known!\n";

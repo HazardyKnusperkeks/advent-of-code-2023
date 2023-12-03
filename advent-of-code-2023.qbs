@@ -10,6 +10,8 @@ Project {
         files: [
             "challenge1.cpp",
             "challenge1.hpp",
+            "challenge2.cpp",
+            "challenge2.hpp",
             "main.cpp",
         ]
 
