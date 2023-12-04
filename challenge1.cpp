@@ -85,11 +85,11 @@ void challenge1(const std::vector<std::string>& input) {
 
     auto       digified1 = input | std::views::transform(digifier);
     const auto sum1      = std::ranges::fold_left(digified1, 0, std::plus<>{});
-    std::cout << "\n == Result of Challenge 1 Part: " << sum1 << " ==\n\n";
+    std::cout << "\n == Result of Challenge 1 Part 1: " << sum1 << " ==\n\n";
 
     auto       digified2 = input | std::views::transform(digifierWithStrings);
     const auto sum2      = std::ranges::fold_left(digified2, 0, std::plus<>{});
-    std::cout << "\n == Result of Challenge 1 Part: " << sum1 << " ==\n == Result of Challenge 1 Part 2: " << sum2
+    std::cout << "\n == Result of Challenge 1 Part 1: " << sum1 << " ==\n == Result of Challenge 1 Part 2: " << sum2
               << " ==\n";
 
     return;
