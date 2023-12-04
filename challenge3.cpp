@@ -193,7 +193,7 @@ struct hash<Pos> {
 } //namespace std
 
 void challenge3(const std::vector<std::string>& input) {
-    std::cout << " == Starting Challenge 2 ==\n";
+    std::cout << " == Starting Challenge 3 ==\n";
 
     std::vector<Pos>             symbolPositions;
     std::vector<Pos>             gearPositions;
