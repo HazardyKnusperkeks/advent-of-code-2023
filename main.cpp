@@ -4,6 +4,7 @@
 #include "challenge4.hpp"
 #include "challenge5.hpp"
 #include "challenge6.hpp"
+#include "challenge7.hpp"
 
 #include <algorithm>
 #include <charconv>
@@ -79,6 +80,7 @@ int main(int argc, char* argv[]) {
                 case 4  : challenge4(challengeInput); break;
                 case 5  : challenge5(challengeInput); break;
                 case 6  : challenge6(challengeInput); break;
+                case 7  : challenge7(challengeInput); break;
 
                 default : {
                     std::cerr << "Challenge " << challenge << " is not known!\n";
