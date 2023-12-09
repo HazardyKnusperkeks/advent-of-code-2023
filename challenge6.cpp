@@ -1,11 +1,10 @@
 #include "challenge6.hpp"
 
+#include "helper.hpp"
+#include "print.hpp"
+
 #include <algorithm>
-#include <charconv>
-#include <cstdint>
-#include <iostream>
 #include <ranges>
-#include <stdexcept>
 #include <string_view>
 
 using namespace std::string_view_literals;
@@ -16,56 +15,45 @@ struct Race {
     std::int64_t Distance;
 };
 
-void throwIfInvalid(bool valid) {
-    if ( !valid ) {
-        throw std::runtime_error{"Invalid Data"};
-    } //if ( !valid )
-    return;
-}
-
-std::int64_t convert(std::string_view input) {
-    std::int64_t ret;
-    throwIfInvalid(std::from_chars(input.begin(), input.end(), ret).ec == std::errc{});
-    return ret;
-}
-
-std::pair<std::vector<Race>, Race> parse(const std::vector<std::string>& input) {
+std::pair<std::vector<Race>, Race> parse(const std::vector<std::string_view>& input) {
     enum class State { Time, Times, Distances } state = State::Time;
     std::vector<Race> races;
     Race*             currentRace;
     std::string       overallTime;
     std::string       overallDuration;
 
-    for ( const auto& word : input ) {
-        switch ( state ) {
-            case State::Time : {
-                throwIfInvalid(word == "Time:"sv);
-                state = State::Times;
-                break;
-            } //case State::Time
-
-            case State::Times : {
-                if ( word == "Distance:"sv ) {
-                    throwIfInvalid(!races.empty());
-                    state       = State::Distances;
-                    currentRace = &races[0];
+    for ( auto line : input ) {
+        for ( const auto& word : splitString(line, ' ') ) {
+            switch ( state ) {
+                case State::Time : {
+                    throwIfInvalid(word == "Time:"sv);
+                    state = State::Times;
                     break;
-                } //if ( word == "Distance:"sv )
+                } //case State::Time
 
-                overallTime += word;
-                races.push_back({convert(word), 0});
-                break;
-            } //case State::Times
+                case State::Times : {
+                    if ( word == "Distance:"sv ) {
+                        throwIfInvalid(!races.empty());
+                        state       = State::Distances;
+                        currentRace = &races[0];
+                        break;
+                    } //if ( word == "Distance:"sv )
 
-            case State::Distances : {
-                throwIfInvalid(currentRace - &races[0] < static_cast<std::int64_t>(races.size()));
-                overallDuration       += word;
-                currentRace->Distance  = convert(word);
-                ++currentRace;
-                break;
-            } //case State::Distances
-        } //switch ( state )
-    } //for ( const auto& word : input )
+                    overallTime += word;
+                    races.push_back({convert(word), 0});
+                    break;
+                } //case State::Times
+
+                case State::Distances : {
+                    throwIfInvalid(currentRace - &races[0] < static_cast<std::int64_t>(races.size()));
+                    overallDuration       += word;
+                    currentRace->Distance  = convert(word);
+                    ++currentRace;
+                    break;
+                } //case State::Distances
+            } //switch ( state )
+        } //for ( const auto& word : splitString(line, ' ') )
+    } //for ( auto line : input )
 
     return {races, Race{convert(overallTime), convert(overallDuration)}};
 }
@@ -84,17 +72,15 @@ std::int64_t numberOfWinStrategies(const Race& race) noexcept {
 }
 } //namespace
 
-void challenge6(const std::vector<std::string>& input) {
-    std::cout << " == Starting Challenge 6 ==\n";
-
+bool challenge6(const std::vector<std::string_view> &input) {
     const auto [races, bigRace] = parse(input);
 
     const auto product =
         std::ranges::fold_left(races | std::views::transform(numberOfWinStrategies), 1, std::multiplies<>{});
-    std::cout << " == Result of Challenge 6 Part 1: " << product << " ==\n";
+    myPrint(" == Result of Part 1: {:d} ==\n", product);
 
     const auto wins = numberOfWinStrategies(bigRace);
+    myPrint(" == Result of Part 2: {:d} ==\n", wins);
 
-    std::cout << " == Result of Challenge 6 Part 2: " << wins << " ==\n";
-    return;
+    return product == 1710720 && wins == 35349468;
 }
