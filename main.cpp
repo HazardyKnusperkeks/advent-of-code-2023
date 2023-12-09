@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <charconv>
+#include <chrono>
 #include <cstring>
 #include <exception>
 #include <filesystem>
@@ -43,8 +44,11 @@ int main(int argc, char* argv[]) {
         return -2;
     } //if ( !std::filesystem::exists(dataDirectory) )
 
+    using Clock = std::chrono::system_clock;
+
     const std::span               inputs{argv + 2, argv + argc};
     std::vector<std::string_view> challengeInput;
+    const auto                    overallStart = Clock::now();
 
     for ( const auto& input : inputs ) {
         int        challenge;
@@ -80,6 +84,9 @@ int main(int argc, char* argv[]) {
             inputFile.read(fileContent.data(), size);
             std::ranges::copy(splitString(fileContent, '\n'), std::back_inserter(challengeInput));
 
+            myPrint(" == Starting Challenge {:d} ==\n", challenge);
+            const auto start = Clock::now();
+
             switch ( challenge ) {
                 // case 1  : challenge1(challengeInput); break;
                 // case 2  : challenge2(challengeInput); break;
@@ -96,11 +103,20 @@ int main(int argc, char* argv[]) {
                     break;
                 } //default
             } //switch ( challenge )
+
+            const auto end      = Clock::now();
+            const auto duration = end - start;
+            myPrint(" == End of Challenge {:d} after {} ==\n\n", challenge,
+                    std::chrono::duration_cast<std::chrono::milliseconds>(duration));
         } //try
         catch ( const std::exception& e ) {
             myErr("Skipping Challenge {:d}: {:s}\n", challenge, e.what());
         } //catch ( const std::exception& e)
     } //for ( const auto& input : inputs )
+
+    const auto overallEnd      = Clock::now();
+    const auto overallDuration = overallEnd - overallStart;
+    myPrint("After {}\n", std::chrono::duration_cast<std::chrono::milliseconds>(overallDuration));
 
     return 0;
 }
