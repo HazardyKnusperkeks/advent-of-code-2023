@@ -75,6 +75,7 @@ int main(int argc, char* argv[]) {
         const auto inputFilePath = dataDirectory / std::format("{:d}.txt", challenge);
 
         try {
+            ++challengesRun;
             if ( !std::filesystem::exists(inputFilePath) ) {
                 throw std::runtime_error{std::format("\"{:s}\" does not exist!", inputFilePath.c_str())};
             } //if ( !std::filesystem::exists(inputFilePath) )
@@ -96,18 +97,15 @@ int main(int argc, char* argv[]) {
             std::string fileContent(static_cast<std::size_t>(size), ' ');
             inputFile.read(fileContent.data(), size);
             std::ranges::copy(splitString(fileContent, '\n'), std::back_inserter(challengeInput));
-            throwIfInvalid(challengeInput.back().empty());
-            challengeInput.pop_back();
 
             myPrint(" == Starting Challenge {:d} ==\n", challenge);
-            ++challengesRun;
             const auto start = Clock::now();
 
             switch ( challenge ) {
                 case 1  : runAndAdd(challenge1); break;
                 case 2  : runAndAdd(challenge2); break;
                 case 3  : runAndAdd(challenge3); break;
-                // case 4  : challenge4(challengeInput); break;
+                case 4  : runAndAdd(challenge4); break;
                 // case 5  : challenge5(challengeInput); break;
                 // case 6  : challenge6(challengeInput); break;
                 // case 7  : challenge7(challengeInput); break;

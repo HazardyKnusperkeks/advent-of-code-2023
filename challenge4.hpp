@@ -1,9 +1,9 @@
 #ifndef CHALLENGE4_HPP
 #define CHALLENGE4_HPP
 
-#include <string>
+#include <string_view>
 #include <vector>
 
-void challenge4(const std::vector<std::string>& input);
+bool challenge4(const std::vector<std::string_view>& input);
 
 #endif //CHALLENGE4_HPP

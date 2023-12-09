@@ -10,7 +10,8 @@
 constexpr auto splitString(const std::string_view data, const char delimiter) noexcept {
     return data | std::views::split(delimiter) | std::views::transform([](const auto& subRange) noexcept {
                return std::string_view{&*subRange.begin(), std::ranges::size(subRange)};
-           });
+           }) |
+           std::views::filter([](const std::string_view entry) noexcept { return !entry.empty(); });
 }
 
 void throwIfInvalid(bool valid, const char* msg = "Invalid Data");
