@@ -1,15 +1,11 @@
 #include "challenge5.hpp"
 
+#include "helper.hpp"
+#include "print.hpp"
+
 #include <algorithm>
-#include <charconv>
-#include <cstdint>
-#include <cstring>
 #include <future>
-#include <iostream>
-#include <limits>
-#include <optional>
 #include <ranges>
-#include <stdexcept>
 #include <string_view>
 
 using namespace std::string_view_literals;
@@ -26,13 +22,6 @@ struct SeedMap {
     std::vector<std::vector<Map>> Maps;
 };
 
-void throwIfInvalid(bool valid) {
-    if ( !valid ) {
-        throw std::runtime_error{"Invalid Data"};
-    } //if ( !valid )
-    return;
-}
-
 std::optional<std::int64_t> convert(std::string_view input) {
     if ( !std::isdigit(input[0]) ) {
         return std::nullopt;
@@ -44,75 +33,75 @@ std::optional<std::int64_t> convert(std::string_view input) {
     return result.ptr == input.data() ? std::nullopt : std::optional{ret};
 }
 
-SeedMap parse(const std::vector<std::string>& input) {
+SeedMap parse(const std::vector<std::string_view>& input) {
     enum class State { Seeds, Seed, Map, DestinationStart, SourceStart, Length } state = State::Seeds;
     SeedMap           ret;
     std::vector<Map>* currentMaps;
     Map*              currentMap;
 
-    for ( const auto& word : input ) {
-        switch ( state ) {
-            case State::Seeds : {
-                throwIfInvalid(word == "seeds:"sv);
-                state = State::Seed;
-                break;
-            } //case State::Seeds
-
-            case State::Seed : {
-                auto number = convert(word);
-                if ( !number ) {
-                    state = State::Map;
+    for ( auto line : input ) {
+        for ( const auto& word : splitString(line, ' ') ) {
+            switch ( state ) {
+                case State::Seeds : {
+                    throwIfInvalid(word == "seeds:"sv);
+                    state = State::Seed;
                     break;
-                } //if ( !number )
+                } //case State::Seeds
 
-                ret.Seeds.push_back(*number);
-                break;
-            } //case State::Seed
+                case State::Seed : {
+                    auto number = convert(word);
+                    if ( !number ) {
+                        state = State::Map;
+                        break;
+                    } //if ( !number )
 
-            case State::Map : {
-                throwIfInvalid(word == "map:"sv);
-                currentMaps = &ret.Maps.emplace_back();
-                state       = State::DestinationStart;
-                break;
-            } //case State::Map
-
-            case State::DestinationStart : {
-                auto number = convert(word);
-                if ( !number ) {
-                    state = State::Map;
+                    ret.Seeds.push_back(*number);
                     break;
-                } //if ( !number )
-                currentMap              = &currentMaps->emplace_back();
-                currentMap->Destination = *number;
-                state                   = State::SourceStart;
-                break;
-            } //case State::DesinationStart
+                } //case State::Seed
 
-            case State::SourceStart : {
-                auto number = convert(word);
-                throwIfInvalid(number.has_value());
-                currentMap->Source = *number;
-                state              = State::Length;
-                break;
-            } //case State::SourceStart
+                case State::Map : {
+                    throwIfInvalid(word == "map:"sv);
+                    currentMaps = &ret.Maps.emplace_back();
+                    state       = State::DestinationStart;
+                    break;
+                } //case State::Map
 
-            case State::Length : {
-                auto number = convert(word);
-                throwIfInvalid(number.has_value());
-                currentMap->Length = *number;
-                state              = State::DestinationStart;
-                break;
-            } //case State::Length
-        } //switch ( state )
-    } //for ( const auto& word : input )
+                case State::DestinationStart : {
+                    auto number = convert(word);
+                    if ( !number ) {
+                        state = State::Map;
+                        break;
+                    } //if ( !number )
+                    currentMap              = &currentMaps->emplace_back();
+                    currentMap->Destination = *number;
+                    state                   = State::SourceStart;
+                    break;
+                } //case State::DesinationStart
+
+                case State::SourceStart : {
+                    auto number = convert(word);
+                    throwIfInvalid(number.has_value());
+                    currentMap->Source = *number;
+                    state              = State::Length;
+                    break;
+                } //case State::SourceStart
+
+                case State::Length : {
+                    auto number = convert(word);
+                    throwIfInvalid(number.has_value());
+                    currentMap->Length = *number;
+                    state              = State::DestinationStart;
+                    break;
+                } //case State::Length
+            } //switch ( state )
+        } //for ( const auto& word : splitString(line, ' ') )
+    } //for ( auto line : input )
 
     return ret;
 }
 } //namespace
 
-void challenge5(const std::vector<std::string>& input) {
-    std::cout << " == Starting Challenge 5 ==\n";
-
+bool challenge5(const std::vector<std::string_view>& input) {
     const auto seedMap = parse(input);
     auto       work    = seedMap.Seeds;
 
@@ -130,11 +119,10 @@ void challenge5(const std::vector<std::string>& input) {
     };
 
     std::ranges::for_each(seedMap.Seeds, applyMaps);
-    auto min = std::ranges::min(seedMap.Seeds | std::views::transform(applyMaps));
-    std::cout << " == Result of Challenge 5 Part 1: " << min << " ==\n";
+    auto min1 = std::ranges::min(seedMap.Seeds | std::views::transform(applyMaps));
+    myPrint(" == Result of Part 1: {:d} ==\n", min1);
 
     work.clear();
-    min = std::numeric_limits<std::int64_t>::max();
     throwIfInvalid(seedMap.Seeds.size() % 2 == 0);
 
     std::vector<std::future<std::int64_t>> results;
@@ -146,7 +134,8 @@ void challenge5(const std::vector<std::string>& input) {
         }));
     } //for ( std::size_t i = 0; i < seedMap.Seeds.size(); i += 2 )
 
-    min = std::ranges::min(results | std::views::transform([](auto& f) noexcept { return f.get(); }));
-    std::cout << " == Result of Challenge 5 Part 2: " << min << " ==\n";
-    return;
+    auto min2 = std::ranges::min(results | std::views::transform([](auto& f) noexcept { return f.get(); }));
+    myPrint(" == Result of Part 1: {:d} ==\n", min2);
+
+    return min1 == 51752125 && min2 == 12634632;
 }
