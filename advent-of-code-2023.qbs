@@ -8,6 +8,7 @@ Project {
     CppApplication {
         consoleApplication: true
         files: [
+            "3rdParty/ctre/include/**/*.hpp",
             "challenge1.cpp",
             "challenge1.hpp",
             "challenge2.cpp",

@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
                 case 5  : runAndAdd(challenge5); break;
                 case 6  : runAndAdd(challenge6); break;
                 case 7  : runAndAdd(challenge7); break;
-                // case 8  : challenge8(challengeInput); break;
+                case 8  : runAndAdd(challenge8); break;
                 case 9  : runAndAdd(challenge9); break;
 
                 default : {

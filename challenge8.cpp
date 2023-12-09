@@ -1,25 +1,18 @@
 #include "challenge8.hpp"
 
+#include "helper.hpp"
+#include "print.hpp"
+#include "3rdParty/ctre/include/ctre.hpp"
+
 #include <algorithm>
-#include <charconv>
-#include <cstdint>
-#include <iostream>
 #include <numeric>
 #include <ranges>
-#include <stdexcept>
 #include <string_view>
 #include <unordered_map>
 
 using namespace std::string_view_literals;
 
 namespace {
-void throwIfInvalid(bool valid, const char* msg = "Invalid Data") {
-    if ( !valid ) {
-        throw std::runtime_error{msg};
-    } //if ( !valid )
-    return;
-}
-
 enum class Direction : bool { Left, Right };
 
 struct Node {
@@ -48,53 +41,23 @@ std::vector<Direction> parseDirections(std::string_view input) {
     return ret;
 }
 
-Map parse(const std::vector<std::string>& input) {
-    enum class State { Directions, Node, Equal, Left, Right } state = State::Directions;
-    Map   map;
-    Node* currentNode;
+Map parse(const std::vector<std::string_view>& input) {
+    Map map;
 
-    for ( std::string_view word : input ) {
-        switch ( state ) {
-            case State::Directions : {
-                map.Directions = parseDirections(word);
-                state          = State::Node;
-                break;
-            } //case State::Directions
+    throwIfInvalid(input.size() >= 1);
+    map.Directions = parseDirections(input[0]);
 
-            case State::Node : {
-                currentNode       = &map.Nodes.emplace(word, Node{}).first->second;
-                currentNode->Name = word;
-                if ( word.ends_with('A') ) {
-                    map.GhostStarts.push_back(word);
-                } //if ( word.ends_with('A') )
-                state = State::Equal;
-                break;
-            } //case State::Node
+    for ( auto line : input | std::views::drop(1) ) {
+        const auto match = ctre::match<"(\\w{3}) = \\((\\w{3}), (\\w{3})\\)">(line);
+        const std::string_view name  = match.get<1>();
+        const std::string_view left  = match.get<2>();
+        const std::string_view right = match.get<3>();
 
-            case State::Equal : {
-                throwIfInvalid(word == "="sv);
-                state = State::Left;
-                break;
-            } //case State::Equal
-
-            case State::Left : {
-                throwIfInvalid(word.size() == 5);
-                throwIfInvalid(word[0] == '(');
-                throwIfInvalid(word[4] == ',');
-                currentNode->Left = word.substr(1, 3);
-                state             = State::Right;
-                break;
-            } //case State::Left
-
-            case State::Right : {
-                throwIfInvalid(word.size() == 4);
-                throwIfInvalid(word[3] == ')');
-                currentNode->Right = word.substr(0, 3);
-                state              = State::Node;
-                break;
-            } //case State::Right
-        } //switch ( state )
-    } //for ( const auto& word : input )
+        map.Nodes.emplace(std::piecewise_construct, std::tuple{name}, std::tuple{name, left, right});
+        if ( name.ends_with('A') ) {
+            map.GhostStarts.push_back(name);
+        } //if ( name.ends_with('A') )
+    } //for ( auto line : input | std::views::drop(1) )
 
     return map;
 }
@@ -128,13 +91,10 @@ std::int64_t calcSteps(const Map& map, std::string_view start, F atTarget) {
 }
 } //namespace
 
-void challenge8(const std::vector<std::string>& input) {
-    std::cout << " == Starting Challenge 8 ==\n";
-
+bool challenge8(const std::vector<std::string_view> &input) {
     const auto map   = parse(input);
     const auto steps = calcSteps(map, "AAA"sv, [](std::string_view node) noexcept { return node == "ZZZ"sv; });
-
-    std::cout << " == Result of Challenge 8 Part 1: " << steps << " ==\n";
+    myPrint(" == Result of Part 1: {:d} ==\n", steps);
 
     std::vector<std::int64_t> ghostSteps(map.GhostStarts.size());
     std::ranges::transform(map.GhostStarts, ghostSteps.begin(), [&map](std::string_view start) {
@@ -142,7 +102,7 @@ void challenge8(const std::vector<std::string>& input) {
     });
 
     const auto ghostStep = std::ranges::fold_left(ghostSteps, 1, std::lcm<std::int64_t, std::int64_t>);
+    myPrint(" == Result of Part 2: {:d} ==\n", ghostStep);
 
-    std::cout << " == Result of Challenge 8 Part 2: " << ghostStep << " ==\n";
-    return;
+    return steps == 12083 && ghostStep == 13'385'272'668'829;
 }
