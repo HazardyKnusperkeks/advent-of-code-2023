@@ -47,7 +47,15 @@ int main(int argc, char* argv[]) {
 
     const std::span               inputs{argv + 2, argv + argc};
     std::vector<std::string_view> challengeInput;
-    const auto                    overallStart = Clock::now();
+    const auto                    overallStart        = Clock::now();
+    int                           challengesRun       = 0;
+    int                           challengesSuccesful = 0;
+    auto runAndAdd = [&challengeInput, &challengesSuccesful](bool (*func)(const std::vector<std::string_view>&)) {
+        if ( func(challengeInput) ) {
+            ++challengesSuccesful;
+        } //if ( func(challengeInput) )
+        return;
+    };
 
     for ( const auto& input : inputs ) {
         const auto challenge = [](std::string_view text) noexcept -> std::int64_t {
@@ -90,6 +98,7 @@ int main(int argc, char* argv[]) {
             std::ranges::copy(splitString(fileContent, '\n'), std::back_inserter(challengeInput));
 
             myPrint(" == Starting Challenge {:d} ==\n", challenge);
+            ++challengesRun;
             const auto start = Clock::now();
 
             switch ( challenge ) {
@@ -101,9 +110,10 @@ int main(int argc, char* argv[]) {
                 // case 6  : challenge6(challengeInput); break;
                 // case 7  : challenge7(challengeInput); break;
                 // case 8  : challenge8(challengeInput); break;
-                case 9  : challenge9(challengeInput); break;
+                case 9  : runAndAdd(challenge9); break;
 
                 default : {
+                    --challengesRun;
                     myErr("Challenge {:d} is not known!\n", challenge);
                     break;
                 } //default
@@ -115,13 +125,16 @@ int main(int argc, char* argv[]) {
                     std::chrono::duration_cast<std::chrono::milliseconds>(duration));
         } //try
         catch ( const std::exception& e ) {
+            --challengesRun;
             myErr("Skipping Challenge {:d}: {:s}\n", challenge, e.what());
         } //catch ( const std::exception& e)
     } //for ( const auto& input : inputs )
 
     const auto overallEnd      = Clock::now();
     const auto overallDuration = overallEnd - overallStart;
-    myPrint("After {}\n", std::chrono::duration_cast<std::chrono::milliseconds>(overallDuration));
+    myPrint("After {} {:d} challenges correctly solved from {:d} ({:.2f}%)\n",
+            std::chrono::duration_cast<std::chrono::milliseconds>(overallDuration), challengesSuccesful, challengesRun,
+            challengesSuccesful * 100. / challengesRun);
 
     return 0;
 }

@@ -69,7 +69,7 @@ std::int64_t extraPolateSequenceBackwards(const Sequence& sequence) noexcept {
 }
 } //namespace
 
-void challenge9(const std::vector<std::string_view>& input) {
+bool challenge9(const std::vector<std::string_view>& input) {
     std::cout << " == Starting Challenge 9 ==\n";
 
     const auto sequences = parse(input);
@@ -82,5 +82,5 @@ void challenge9(const std::vector<std::string_view>& input) {
         std::ranges::fold_left(sequences | std::views::transform(extraPolateSequenceBackwards), 0, std::plus<>{});
 
     std::cout << " == Result of Challenge 9 Part 2: " << sum2 << " ==\n";
-    return;
+    return sum1 == 1'974'232'246 && sum2 == 928;
 }

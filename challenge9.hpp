@@ -4,6 +4,6 @@
 #include <string_view>
 #include <vector>
 
-void challenge9(const std::vector<std::string_view>& input);
+bool challenge9(const std::vector<std::string_view>& input);
 
 #endif //CHALLENGE9_HPP
