@@ -11,7 +11,6 @@
 #include "print.hpp"
 
 #include <algorithm>
-#include <charconv>
 #include <chrono>
 #include <cstring>
 #include <exception>
@@ -51,13 +50,19 @@ int main(int argc, char* argv[]) {
     const auto                    overallStart = Clock::now();
 
     for ( const auto& input : inputs ) {
-        int        challenge;
-        const auto result = std::from_chars(input, input + std::strlen(input), challenge);
+        const auto challenge = [](std::string_view text) noexcept -> std::int64_t {
+            try {
+                return convert(text).value_or(0);
+            } //try
+            catch ( ... ) {
+                return 0;
+            }
+        }({input, std::strlen(input)});
 
-        if ( result.ec != std::errc{} ) {
+        if ( challenge == 0 ) {
             myErr("{:s} is not a valid challenge identifier!\n", input);
             continue;
-        } //if ( result.ec != std::errc{} )
+        } //if ( challenge == 0 )
 
         const auto inputFilePath = dataDirectory / std::format("{:d}.txt", challenge);
 
