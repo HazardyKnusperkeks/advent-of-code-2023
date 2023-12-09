@@ -8,6 +8,7 @@
 #include "challenge8.hpp"
 #include "challenge9.hpp"
 #include "helper.hpp"
+#include "print.hpp"
 
 #include <algorithm>
 #include <charconv>
@@ -16,11 +17,9 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
-#include <iostream>
 #include <iterator>
-#include <ranges>
 #include <span>
-#include <string>
+#include <string_view>
 #include <vector>
 
 /**
@@ -33,14 +32,14 @@
  */
 int main(int argc, char* argv[]) {
     if ( argc < 3 ) {
-        std::cerr << "Not enough parameters!";
+        myErr("Not enough parameters!");
         return -1;
     } //if ( argc < 3 )
 
     const std::filesystem::path dataDirectory{argv[1]};
 
     if ( !std::filesystem::exists(dataDirectory) ) {
-        std::cerr << "Path " << dataDirectory << " does not exist!";
+        myErr("Path {:s} does not exist!", dataDirectory.native());
         return -2;
     } //if ( !std::filesystem::exists(dataDirectory) )
 
@@ -52,7 +51,7 @@ int main(int argc, char* argv[]) {
         const auto result = std::from_chars(input, input + std::strlen(input), challenge);
 
         if ( result.ec != std::errc{} ) {
-            std::cerr << input << " is not a valid challenge identifier!\n";
+            myErr("{:s} is not a valid challenge identifier!\n", input);
             continue;
         } //if ( result.ec != std::errc{} )
 
@@ -93,13 +92,13 @@ int main(int argc, char* argv[]) {
                 case 9  : challenge9(challengeInput); break;
 
                 default : {
-                    std::cerr << "Challenge " << challenge << " is not known!\n";
+                    myErr("Challenge {:d} is not known!\n", challenge);
                     break;
                 } //default
             } //switch ( challenge )
         } //try
         catch ( const std::exception& e ) {
-            std::cerr << "Skipping Challenge " << challenge << ": " << e.what() << '\n';
+            myErr("Skipping Challenge {:d}: {:s}\n", challenge, e.what());
         } //catch ( const std::exception& e)
     } //for ( const auto& input : inputs )
 

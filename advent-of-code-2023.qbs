@@ -28,6 +28,8 @@ Project {
             "challenge9.hpp",
             "helper.hpp",
             "main.cpp",
+            "print.cpp",
+            "print.hpp",
         ]
 
         Depends { name: "AllWarnings" }
