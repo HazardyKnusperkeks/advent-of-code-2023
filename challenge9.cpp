@@ -9,19 +9,11 @@
 #include <iostream>
 #include <iterator>
 #include <ranges>
-#include <stdexcept>
 #include <string_view>
 
 using namespace std::string_view_literals;
 
 namespace {
-void throwIfInvalid(bool valid) {
-    if ( !valid ) {
-        throw std::runtime_error{"Invalid Data"};
-    } //if ( !valid )
-    return;
-}
-
 std::int64_t convert(std::string_view input) {
     std::int64_t ret;
     throwIfInvalid(std::from_chars(input.begin(), input.end(), ret).ec == std::errc{});

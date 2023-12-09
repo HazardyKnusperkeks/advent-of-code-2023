@@ -10,4 +10,6 @@ constexpr auto splitString(const std::string_view data, const char delimiter) no
            });
 }
 
+void throwIfInvalid(bool valid, const char* msg = "Invalid Data");
+
 #endif //HELPER_HPP
