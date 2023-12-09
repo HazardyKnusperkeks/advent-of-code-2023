@@ -1,26 +1,17 @@
 #include "challenge7.hpp"
 
+#include "helper.hpp"
+#include "print.hpp"
+
 #include <algorithm>
-#include <cctype>
-#include <charconv>
-#include <cstdint>
-#include <iostream>
+#include <functional>
 #include <ranges>
-#include <stdexcept>
-#include <string_view>
 #include <utility>
 
 using namespace std::string_view_literals;
 
 namespace {
 enum KindType { HighCard, OnePair, TwoPair, Three, FullHouse, Four, Five };
-
-void throwIfInvalid(bool valid) {
-    if ( !valid ) {
-        throw std::runtime_error{"Invalid Data"};
-    } //if ( !valid )
-    return;
-}
 
 constexpr int convertToValue(char c) {
     switch ( c ) {
@@ -152,43 +143,29 @@ struct Hand {
     constexpr auto operator<=>(const Hand& that) const noexcept = default;
 };
 
-std::vector<Hand> parse(const std::vector<std::string>& input) {
-    enum class State { Cards, Bid } state = State::Cards;
+std::vector<Hand> parse(const std::vector<std::string_view>& input) {
     std::vector<Hand> hands;
-    Hand*             currentHand;
 
-    for ( const auto& word : input ) {
-        switch ( state ) {
-            case State::Cards : {
-                currentHand        = &hands.emplace_back();
-                currentHand->Cards = calculateCards(word);
-                currentHand->Kind  = calculateKind<false>(currentHand->Cards);
-                state              = State::Bid;
-                break;
-            } //case State::Cards
-
-            case State::Bid : {
-                currentHand->Bid = convert(word);
-                state            = State::Cards;
-                break;
-            } //case State::Times
-        } //switch ( state )
-    } //for ( const auto& word : input )
+    for ( auto line : input ) {
+        auto& currentHand = hands.emplace_back();
+        auto  splitPos    = line.find(' ');
+        currentHand.Cards = calculateCards(line.substr(0, splitPos));
+        currentHand.Kind  = calculateKind<false>(currentHand.Cards);
+        currentHand.Bid   = convert(line.substr(splitPos + 1));
+    } //for ( auto line : input )
 
     return hands;
 }
 } //namespace
 
-void challenge7(const std::vector<std::string>& input) {
-    std::cout << " == Starting Challenge 7 ==\n";
+bool challenge7(const std::vector<std::string_view> &input) {
 
     auto hands = parse(input);
     std::ranges::sort(hands);
     const auto sum1 = std::ranges::fold_left(
         hands | std::views::transform([rank = 0](const Hand& hand) mutable noexcept { return ++rank * hand.Bid; }), 0,
         std::plus<>{});
-
-    std::cout << " == Result of Challenge 7 Part 1: " << sum1 << " ==\n";
+    myPrint(" == Result of Part 1: {:d} ==\n", sum1);
 
     std::ranges::for_each(hands, [](Hand& hand) noexcept {
         hand.Kind = calculateKind<true>(hand.Cards);
@@ -198,7 +175,7 @@ void challenge7(const std::vector<std::string>& input) {
     const auto sum2 = std::ranges::fold_left(
         hands | std::views::transform([rank = 0](const Hand& hand) mutable noexcept { return ++rank * hand.Bid; }), 0,
         std::plus<>{});
+    myPrint(" == Result of Part 2: {:d} ==\n", sum2);
 
-    std::cout << " == Result of Challenge 7 Part 2: " << sum2 << " ==\n";
-    return;
+    return sum1 == 248'396'258 && sum2 == 246'436'046;
 }
