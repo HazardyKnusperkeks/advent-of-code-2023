@@ -1,15 +1,13 @@
 #include "challenge1.hpp"
 
+#include "helper.hpp"
+#include "print.hpp"
+
 #include <algorithm>
 #include <array>
-#include <format>
 #include <functional>
-#include <iomanip>
-#include <iostream>
 #include <limits>
 #include <ranges>
-#include <stdexcept>
-#include <string_view>
 
 using namespace std::string_view_literals;
 
@@ -20,14 +18,12 @@ int digifier(std::string_view input) {
     const auto firstDigitPos = input.find_first_of(digits);
     const auto lastDigitPos  = input.find_last_of(digits);
 
-    if ( firstDigitPos == std::string_view::npos ) {
-        throw std::runtime_error{std::format("Input \"{:s}\" does not contain a digit", input)};
-    } //if ( if ( firstDigitPos == std::string_view::npos ) )
+    throwIfInvalid(firstDigitPos != std::string_view::npos,
+                   std::format("Input \"{:s}\" does not contain a digit", input).c_str());
 
     const auto firstDigit = input[firstDigitPos] - '0';
     const auto lastDigit  = input[lastDigitPos] - '0';
     const auto result     = firstDigit * 10 + lastDigit;
-    std::cout << std::setw(50) << std::left << input << " => " << result << '\n';
     return result;
 }
 
@@ -51,10 +47,6 @@ int digifierWithStrings(std::string_view input) noexcept {
         return static_cast<int>(pos);
     };
 
-    if ( input == "5jxjmnsn" ) {
-        std::cout << ' ';
-    }
-
     for ( auto&& [name, position] : std::views::zip(names, positions) ) {
         position = mapHigh(input.find(name));
     } //for ( auto& [name, positon] : std::views::zip(names, positions) )
@@ -75,22 +67,18 @@ int digifierWithStrings(std::string_view input) noexcept {
     const auto lastDigit      = lastDigitIndex == digitIndex ? input[positions[digitIndex]] - '0' : lastDigitIndex + 1;
 
     const auto result         = static_cast<int>(firstDigit * 10 + lastDigit);
-    std::cout << std::setw(50) << std::left << input << " ==> " << result << '\n';
     return result;
 }
 } //namespace
 
-void challenge1(const std::vector<std::string>& input) {
-    std::cout << " == Starting Challenge 1 ==\n";
-
+bool challenge1(const std::vector<std::string_view>& input) {
     auto       digified1 = input | std::views::transform(digifier);
     const auto sum1      = std::ranges::fold_left(digified1, 0, std::plus<>{});
-    std::cout << "\n == Result of Challenge 1 Part 1: " << sum1 << " ==\n\n";
+    myPrint(" == Result of Part 1: {:d} ==\n", sum1);
 
     auto       digified2 = input | std::views::transform(digifierWithStrings);
     const auto sum2      = std::ranges::fold_left(digified2, 0, std::plus<>{});
-    std::cout << "\n == Result of Challenge 1 Part 1: " << sum1 << " ==\n == Result of Challenge 1 Part 2: " << sum2
-              << " ==\n";
+    myPrint(" == Result of Part 2: {:d} ==\n", sum2);
 
-    return;
+    return sum1 == 54667 && sum2 == 54203;
 }

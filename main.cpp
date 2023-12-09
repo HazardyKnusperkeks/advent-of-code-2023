@@ -96,13 +96,15 @@ int main(int argc, char* argv[]) {
             std::string fileContent(static_cast<std::size_t>(size), ' ');
             inputFile.read(fileContent.data(), size);
             std::ranges::copy(splitString(fileContent, '\n'), std::back_inserter(challengeInput));
+            throwIfInvalid(challengeInput.back().empty());
+            challengeInput.pop_back();
 
             myPrint(" == Starting Challenge {:d} ==\n", challenge);
             ++challengesRun;
             const auto start = Clock::now();
 
             switch ( challenge ) {
-                // case 1  : challenge1(challengeInput); break;
+                case 1  : runAndAdd(challenge1); break;
                 // case 2  : challenge2(challengeInput); break;
                 // case 3  : challenge3(challengeInput); break;
                 // case 4  : challenge4(challengeInput); break;
