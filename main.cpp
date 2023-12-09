@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 
             switch ( challenge ) {
                 case 1  : runAndAdd(challenge1); break;
-                // case 2  : challenge2(challengeInput); break;
+                case 2  : runAndAdd(challenge2); break;
                 // case 3  : challenge3(challengeInput); break;
                 // case 4  : challenge4(challengeInput); break;
                 // case 5  : challenge5(challengeInput); break;
