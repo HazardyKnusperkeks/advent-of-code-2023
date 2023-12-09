@@ -1,10 +1,10 @@
 #include "challenge3.hpp"
 
+#include "helper.hpp"
+#include "print.hpp"
+
 #include <algorithm>
 #include <cctype>
-#include <charconv>
-#include <iostream>
-#include <stdexcept>
 #include <unordered_map>
 
 namespace {
@@ -170,7 +170,7 @@ struct AdjacentSymbolPositions {
     }
 };
 
-auto extractNumber(const std::string& str, std::size_t pos) {
+auto extractNumber(const std::string_view str, std::size_t pos) {
     int        number;
     const auto start  = &str[pos];
     const auto end    = start + str.size() - pos;
@@ -192,9 +192,7 @@ struct hash<Pos> {
 };
 } //namespace std
 
-void challenge3(const std::vector<std::string>& input) {
-    std::cout << " == Starting Challenge 3 ==\n";
-
+bool challenge3(const std::vector<std::string_view> &input) {
     std::vector<Pos>             symbolPositions;
     std::vector<Pos>             gearPositions;
     std::unordered_map<Pos, int> numbers;
@@ -206,7 +204,7 @@ void challenge3(const std::vector<std::string>& input) {
         std::size_t pos     = rowText.find_first_not_of('.');
         maxColumn           = std::max(maxColumn, rowText.size());
 
-        while ( pos != std::string::npos ) {
+        while ( pos != std::string_view::npos ) {
             if ( std::isdigit(static_cast<unsigned char>(rowText[pos])) ) {
                 auto [number, endOfNumber] = extractNumber(rowText, pos);
                 numbers.emplace(Pos{row, pos}, number);
@@ -223,7 +221,7 @@ void challenge3(const std::vector<std::string>& input) {
                 ++pos;
             } //else -> if ( std::isdigit(static_cast<unsigned char>(rowText[pos])) )
             pos = rowText.find_first_not_of('.', pos);
-        } //while ( pos != std::string::npos )
+        } //while ( pos != std::string_view::npos )
     } //for ( std::size_t row = 0; row < input.size(); ++row )
 
     const Pos maxDimensions{input.size(), maxColumn};
@@ -272,8 +270,8 @@ void challenge3(const std::vector<std::string>& input) {
         } //if ( auto iter = numbers.find(position); iter != Numbers.end() )
     } //for ( auto position : adjacentSymbolPositions )
 
-    std::cout << " == Result of Challenge 3 Part 1: " << sum1 << " ==\n";
-    std::cout << " == Result of Challenge 3 Part 2: " << sum2 << " ==\n";
+    myPrint(" == Result of Part 1: {:d} ==\n", sum1);
+    myPrint(" == Result of Part 2: {:d} ==\n", sum2);
 
-    return;
+    return sum1 == 557705 && sum2 == 84266818;
 }
