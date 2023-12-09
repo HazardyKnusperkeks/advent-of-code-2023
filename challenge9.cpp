@@ -6,6 +6,7 @@
 #include <cctype>
 #include <charconv>
 #include <cstdint>
+#include <functional>
 #include <iostream>
 #include <iterator>
 #include <ranges>
@@ -20,9 +21,7 @@ std::int64_t convert(std::string_view input) {
     return ret;
 }
 
-struct Sequence {
-    std::vector<std::int64_t> Numbers;
-};
+using Sequence = std::vector<std::int64_t>;
 
 std::vector<Sequence> parse(const std::vector<std::string_view>& input) {
     std::vector<Sequence> sequences;
@@ -33,39 +32,32 @@ std::vector<Sequence> parse(const std::vector<std::string_view>& input) {
         } //if ( line.empty() )
 
         auto& currentSequence = sequences.emplace_back();
-        std::ranges::transform(splitString(line, ' '), std::back_inserter(currentSequence.Numbers), convert);
+        std::ranges::transform(splitString(line, ' '), std::back_inserter(currentSequence), convert);
     } //for ( const auto& line : input )
     return sequences;
 }
 
-std::int64_t extraPolateRow(const std::vector<std::int64_t>& row) noexcept {
+template<typename Accessor, typename Combination>
+std::int64_t extraPolateRow(const std::vector<std::int64_t>& row, const Accessor& accessor,
+                            const Combination& combination) noexcept {
     std::vector<std::int64_t> nextRow(row.size() - 1);
     const auto                op = [](std::int64_t left, std::int64_t right) noexcept { return right - left; };
     std::ranges::transform(row, row | std::views::drop(1), nextRow.begin(), op);
     if ( std::ranges::all_of(nextRow, [](auto x) noexcept { return x == 0; }) ) {
-        return row.back();
+        return std::invoke(accessor, row);
     } //if ( std::ranges::all_of(nextRow, [](auto x) noexcept { return x == 0; }) )
-    auto extraPolated = extraPolateRow(nextRow);
-    return row.back() + extraPolated;
+    const auto extraPolated = extraPolateRow(nextRow, accessor, combination);
+    return combination(std::invoke(accessor, row), extraPolated);
 }
 
 std::int64_t extraPolateSequence(const Sequence& sequence) noexcept {
-    return extraPolateRow(sequence.Numbers);
-}
-
-std::int64_t extraPolateRowBackwards(const std::vector<std::int64_t>& row) noexcept {
-    std::vector<std::int64_t> nextRow(row.size() - 1);
-    const auto                op = [](std::int64_t left, std::int64_t right) noexcept { return right - left; };
-    std::ranges::transform(row, row | std::views::drop(1), nextRow.begin(), op);
-    if ( std::ranges::all_of(nextRow, [](auto x) noexcept { return x == 0; }) ) {
-        return row.front();
-    } //if ( std::ranges::all_of(nextRow, [](auto x) noexcept { return x == 0; }) )
-    auto extraPolated = extraPolateRowBackwards(nextRow);
-    return row.front() - extraPolated;
+    return extraPolateRow(sequence, static_cast<const std::int64_t& (Sequence::*)() const>(&Sequence::back),
+                          std::plus<>{});
 }
 
 std::int64_t extraPolateSequenceBackwards(const Sequence& sequence) noexcept {
-    return extraPolateRowBackwards(sequence.Numbers);
+    return extraPolateRow(sequence, static_cast<const std::int64_t& (Sequence::*)() const>(&Sequence::front),
+                          std::minus<>{});
 }
 } //namespace
 
