@@ -7,6 +7,7 @@
 #include "challenge7.hpp"
 #include "challenge8.hpp"
 #include "challenge9.hpp"
+#include "helper.hpp"
 
 #include <algorithm>
 #include <charconv>
@@ -43,8 +44,8 @@ int main(int argc, char* argv[]) {
         return -2;
     } //if ( !std::filesystem::exists(dataDirectory) )
 
-    const std::span          inputs{argv + 2, argv + argc};
-    std::vector<std::string> challengeInput;
+    const std::span               inputs{argv + 2, argv + argc};
+    std::vector<std::string_view> challengeInput;
 
     for ( const auto& input : inputs ) {
         int        challenge;
@@ -73,30 +74,22 @@ int main(int argc, char* argv[]) {
             } //if ( !inputFile )
 
             challengeInput.clear();
-            if ( challenge == 9 ) {
-                inputFile.seekg(0, std::ios::end);
-                const auto size = inputFile.tellg();
-                inputFile.seekg(0, std::ios::beg);
-                std::string fileContent(static_cast<std::size_t>(size), ' ');
-                inputFile.read(fileContent.data(), size);
-                std::ranges::transform(fileContent | std::views::split('\n'), std::back_inserter(challengeInput),
-                                       [](auto&& subRange) noexcept {
-                                           return std::string{&*subRange.begin(), std::ranges::size(subRange)};
-                                       });
-            }
-            else {
-                std::ranges::copy(std::views::istream<std::string>(inputFile), std::back_inserter(challengeInput));
-            }
+            inputFile.seekg(0, std::ios::end);
+            const auto size = inputFile.tellg();
+            inputFile.seekg(0, std::ios::beg);
+            std::string fileContent(static_cast<std::size_t>(size), ' ');
+            inputFile.read(fileContent.data(), size);
+            std::ranges::copy(splitString(fileContent, '\n'), std::back_inserter(challengeInput));
 
             switch ( challenge ) {
-                case 1  : challenge1(challengeInput); break;
-                case 2  : challenge2(challengeInput); break;
-                case 3  : challenge3(challengeInput); break;
-                case 4  : challenge4(challengeInput); break;
-                case 5  : challenge5(challengeInput); break;
-                case 6  : challenge6(challengeInput); break;
-                case 7  : challenge7(challengeInput); break;
-                case 8  : challenge8(challengeInput); break;
+                // case 1  : challenge1(challengeInput); break;
+                // case 2  : challenge2(challengeInput); break;
+                // case 3  : challenge3(challengeInput); break;
+                // case 4  : challenge4(challengeInput); break;
+                // case 5  : challenge5(challengeInput); break;
+                // case 6  : challenge6(challengeInput); break;
+                // case 7  : challenge7(challengeInput); break;
+                // case 8  : challenge8(challengeInput); break;
                 case 9  : challenge9(challengeInput); break;
 
                 default : {

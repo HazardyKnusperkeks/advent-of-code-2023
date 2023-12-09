@@ -1,5 +1,7 @@
 #include "challenge9.hpp"
 
+#include "helper.hpp"
+
 #include <algorithm>
 #include <cctype>
 #include <charconv>
@@ -30,7 +32,7 @@ struct Sequence {
     std::vector<std::int64_t> Numbers;
 };
 
-std::vector<Sequence> parse(const std::vector<std::string>& input) {
+std::vector<Sequence> parse(const std::vector<std::string_view>& input) {
     std::vector<Sequence> sequences;
 
     for ( const auto& line : input ) {
@@ -39,10 +41,7 @@ std::vector<Sequence> parse(const std::vector<std::string>& input) {
         } //if ( line.empty() )
 
         auto& currentSequence = sequences.emplace_back();
-        std::ranges::transform(line | std::views::split(' '), std::back_inserter(currentSequence.Numbers),
-                               [](const auto& subRange) {
-                                   return convert(std::string_view{&*subRange.begin(), std::ranges::size(subRange)});
-                               });
+        std::ranges::transform(splitString(line, ' '), std::back_inserter(currentSequence.Numbers), convert);
     } //for ( const auto& line : input )
     return sequences;
 }
@@ -78,7 +77,7 @@ std::int64_t extraPolateSequenceBackwards(const Sequence& sequence) noexcept {
 }
 } //namespace
 
-void challenge9(const std::vector<std::string>& input) {
+void challenge9(const std::vector<std::string_view>& input) {
     std::cout << " == Starting Challenge 9 ==\n";
 
     const auto sequences = parse(input);
