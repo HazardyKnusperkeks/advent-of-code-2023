@@ -22,21 +22,10 @@ struct SeedMap {
     std::vector<std::vector<Map>> Maps;
 };
 
-std::optional<std::int64_t> convert(std::string_view input) {
-    if ( !std::isdigit(input[0]) ) {
-        return std::nullopt;
-    } //if ( !std::isdigit(input[0]) )
-
-    std::int64_t ret;
-    auto         result = std::from_chars(input.begin(), input.end(), ret);
-    throwIfInvalid(result.ec == std::errc{});
-    return result.ptr == input.data() ? std::nullopt : std::optional{ret};
-}
-
 SeedMap parse(const std::vector<std::string_view>& input) {
     enum class State { Seeds, Seed, Map, DestinationStart, SourceStart, Length } state = State::Seeds;
     SeedMap           ret;
-    std::vector<Map>* currentMaps;
+    std::vector<Map>* currentMaps = nullptr;
     Map*              currentMap;
 
     for ( auto line : input ) {
@@ -49,7 +38,7 @@ SeedMap parse(const std::vector<std::string_view>& input) {
                 } //case State::Seeds
 
                 case State::Seed : {
-                    auto number = convert(word);
+                    auto number = convertOptionally(word);
                     if ( !number ) {
                         state = State::Map;
                         break;
@@ -67,7 +56,7 @@ SeedMap parse(const std::vector<std::string_view>& input) {
                 } //case State::Map
 
                 case State::DestinationStart : {
-                    auto number = convert(word);
+                    auto number = convertOptionally(word);
                     if ( !number ) {
                         state = State::Map;
                         break;
@@ -79,7 +68,7 @@ SeedMap parse(const std::vector<std::string_view>& input) {
                 } //case State::DesinationStart
 
                 case State::SourceStart : {
-                    auto number = convert(word);
+                    auto number = convertOptionally(word);
                     throwIfInvalid(number.has_value());
                     currentMap->Source = *number;
                     state              = State::Length;
@@ -87,7 +76,7 @@ SeedMap parse(const std::vector<std::string_view>& input) {
                 } //case State::SourceStart
 
                 case State::Length : {
-                    auto number = convert(word);
+                    auto number = convertOptionally(word);
                     throwIfInvalid(number.has_value());
                     currentMap->Length = *number;
                     state              = State::DestinationStart;

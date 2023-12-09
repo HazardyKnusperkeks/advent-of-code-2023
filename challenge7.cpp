@@ -122,12 +122,6 @@ std::array<int, 5> calculateCards(std::string_view word) {
     return cards;
 }
 
-std::int64_t convert(std::string_view input) {
-    std::int64_t ret;
-    throwIfInvalid(std::from_chars(input.begin(), input.end(), ret).ec == std::errc{});
-    return ret;
-}
-
 struct Hand {
     std::array<int, 5> Cards;
     KindType           Kind;

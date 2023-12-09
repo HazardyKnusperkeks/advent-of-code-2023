@@ -9,12 +9,6 @@
 #include <ranges>
 
 namespace {
-std::int64_t convert(std::string_view input) {
-    std::int64_t ret;
-    throwIfInvalid(std::from_chars(input.begin(), input.end(), ret).ec == std::errc{});
-    return ret;
-}
-
 using Sequence = std::vector<std::int64_t>;
 
 std::vector<Sequence> parse(const std::vector<std::string_view>& input) {
