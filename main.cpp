@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
     for ( const auto& input : inputs ) {
         const auto challenge = [](std::string_view text) noexcept -> std::int64_t {
             try {
-                return convert(text).value_or(0);
+                return convert(text);
             } //try
             catch ( ... ) {
                 return 0;

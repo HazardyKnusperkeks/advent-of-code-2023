@@ -3,6 +3,7 @@
 
 #include <format>
 #include <iterator>
+#include <ostream>
 
 extern std::ostream_iterator<char> outIterator;
 extern std::ostream_iterator<char> errIterator;

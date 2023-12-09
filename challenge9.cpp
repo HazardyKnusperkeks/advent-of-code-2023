@@ -1,18 +1,12 @@
 #include "challenge9.hpp"
 
 #include "helper.hpp"
+#include "print.hpp"
 
 #include <algorithm>
-#include <cctype>
-#include <charconv>
-#include <cstdint>
 #include <functional>
-#include <iostream>
 #include <iterator>
 #include <ranges>
-#include <string_view>
-
-using namespace std::string_view_literals;
 
 namespace {
 std::int64_t convert(std::string_view input) {
@@ -62,17 +56,15 @@ std::int64_t extraPolateSequenceBackwards(const Sequence& sequence) noexcept {
 } //namespace
 
 bool challenge9(const std::vector<std::string_view>& input) {
-    std::cout << " == Starting Challenge 9 ==\n";
-
     const auto sequences = parse(input);
 
     const auto sum1 = std::ranges::fold_left(sequences | std::views::transform(extraPolateSequence), 0, std::plus<>{});
 
-    std::cout << " == Result of Challenge 9 Part 1: " << sum1 << " ==\n";
+    myPrint(" == Result of Part 1: {:d} ==\n", sum1);
 
     const auto sum2 =
         std::ranges::fold_left(sequences | std::views::transform(extraPolateSequenceBackwards), 0, std::plus<>{});
 
-    std::cout << " == Result of Challenge 9 Part 2: " << sum2 << " ==\n";
+    myPrint(" == Result of Part 2: {:d} ==\n", sum2);
     return sum1 == 1'974'232'246 && sum2 == 928;
 }

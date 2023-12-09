@@ -15,7 +15,7 @@ constexpr auto splitString(const std::string_view data, const char delimiter) no
 
 void throwIfInvalid(bool valid, const char* msg = "Invalid Data");
 
-inline std::optional<std::int64_t> convert(std::string_view input) {
+inline std::optional<std::int64_t> convertOptionally(std::string_view input) {
     if ( !std::isdigit(input[0]) ) {
         return std::nullopt;
     } //if ( !std::isdigit(input[0]) )
@@ -24,6 +24,12 @@ inline std::optional<std::int64_t> convert(std::string_view input) {
     auto         result = std::from_chars(input.begin(), input.end(), ret);
     throwIfInvalid(result.ec == std::errc{});
     return result.ptr == input.data() ? std::nullopt : std::optional{ret};
+}
+
+inline std::int64_t convert(std::string_view input) {
+    auto result = convertOptionally(input);
+    throwIfInvalid(!!result);
+    return *result;
 }
 
 #endif //HELPER_HPP
