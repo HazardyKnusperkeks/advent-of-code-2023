@@ -11,6 +11,8 @@ Project {
             "3rdParty/ctre/include/**/*.hpp",
             "challenge1.cpp",
             "challenge1.hpp",
+            "challenge10.cpp",
+            "challenge10.hpp",
             "challenge2.cpp",
             "challenge2.hpp",
             "challenge3.cpp",
