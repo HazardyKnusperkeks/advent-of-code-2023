@@ -3,7 +3,7 @@
 #include "helper.hpp"
 #include "print.hpp"
 
-#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 
 namespace {
@@ -198,30 +198,29 @@ bool challenge10(const std::vector<std::string_view>& input) {
     MovingPosition pos1{startPositions[0], animalPosition};
     MovingPosition pos2{startPositions[1], animalPosition};
 
-    std::unordered_map<Coordinate, std::int64_t> partOfLoop;
-    partOfLoop.emplace(animalPosition, 0);
-    partOfLoop.emplace(startPositions[0], 1);
-    partOfLoop.emplace(startPositions[1], 1);
+    std::unordered_set<Coordinate> partOfLoop;
+    partOfLoop.insert(animalPosition);
+    partOfLoop.insert(startPositions[0]);
+    partOfLoop.insert(startPositions[1]);
 
     std::int64_t moves = 1;
     while ( pos1.Current != pos2.Current ) {
         move(map, pos1);
         move(map, pos2);
         ++moves;
-        partOfLoop.emplace(pos1.Current, moves);
-        partOfLoop.emplace(pos2.Current, moves);
+        partOfLoop.insert(pos1.Current);
+        partOfLoop.insert(pos2.Current);
     } //while ( pos1.Current != pos2.Current )
 
     myPrint(" == Result of Part 1: {:d} ==\n", moves);
 
     std::int64_t withinLoop = 0;
-    const auto   end        = partOfLoop.end();
     for ( std::size_t row = 0; row < map.size(); ++row ) {
         bool within    = false;
         bool fromNorth = false;
 
         for ( Coordinate pos{row, 0}; pos.Column < map[row].size(); ++pos.Column ) {
-            if ( auto iter = partOfLoop.find(pos); iter != end ) {
+            if ( partOfLoop.contains(pos) ) {
                 auto direction = static_cast<PipeDirection>(map[pos.Row][pos.Column]);
                 if ( direction == Animal ) {
                     direction = animalDirection;
