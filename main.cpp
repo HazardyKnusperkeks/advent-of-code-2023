@@ -2,6 +2,7 @@
 #include "challenge10.hpp"
 #include "challenge11.hpp"
 #include "challenge12.hpp"
+#include "challenge13.hpp"
 #include "challenge2.hpp"
 #include "challenge3.hpp"
 #include "challenge4.hpp"
@@ -99,7 +100,11 @@ int main(int argc, char* argv[]) {
             inputFile.seekg(0, std::ios::beg);
             std::string fileContent(static_cast<std::size_t>(size), ' ');
             inputFile.read(fileContent.data(), size);
-            std::ranges::copy(splitString(fileContent, '\n'), std::back_inserter(challengeInput));
+            std::ranges::copy(splitString<false>(fileContent, '\n'), std::back_inserter(challengeInput));
+            auto lastNonEmpty = std::ranges::find_last_if_not(challengeInput, &std::string_view::empty);
+            if ( lastNonEmpty.begin() != challengeInput.end() ) {
+                challengeInput.erase(std::next(lastNonEmpty.begin()), lastNonEmpty.end());
+            } //if ( lastNonEmpty.begin() != challengeInput.end() )
 
             myPrint(" == Starting Challenge {:d} ==\n", challenge);
             const auto start = Clock::now();
@@ -117,6 +122,7 @@ int main(int argc, char* argv[]) {
                 case 10 : runAndAdd(challenge10); break;
                 case 11 : runAndAdd(challenge11); break;
                 case 12 : runAndAdd(challenge12); break;
+                case 13 : runAndAdd(challenge13); break;
 
                 default : {
                     --challengesRun;

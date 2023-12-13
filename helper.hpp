@@ -7,11 +7,17 @@
 #include <ranges>
 #include <string_view>
 
+template<bool SkipEmpty = true>
 constexpr auto splitString(const std::string_view data, const char delimiter) noexcept {
-    return data | std::views::split(delimiter) | std::views::transform([](const auto& subRange) noexcept {
-               return std::string_view{&*subRange.begin(), std::ranges::size(subRange)};
-           }) |
-           std::views::filter([](const std::string_view entry) noexcept { return !entry.empty(); });
+    auto split = data | std::views::split(delimiter) | std::views::transform([](const auto& subRange) noexcept {
+                     return std::string_view{&*subRange.begin(), std::ranges::size(subRange)};
+                 });
+    if constexpr ( SkipEmpty ) {
+        return split | std::views::filter([](const std::string_view entry) noexcept { return !entry.empty(); });
+    } //if constexpr ( SkipEmpty )
+    else {
+        return split;
+    } //else -> if constexpr ( SkipEmpty )
 }
 
 void throwIfInvalid(bool valid, const char* msg = "Invalid Data");
