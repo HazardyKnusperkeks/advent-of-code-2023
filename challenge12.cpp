@@ -202,5 +202,5 @@ bool challenge12(const std::vector<std::string_view>& input) {
                                                0, std::plus<>{});
     myPrint(" == Result of Part 2: {:d} ==\n", sum2);
 
-    return sum1 == 7236 && sum2 == 495;
+    return sum1 == 7236 && sum2 == 11'607'695'322'318;
 }

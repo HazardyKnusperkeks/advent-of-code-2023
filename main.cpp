@@ -58,6 +58,9 @@ int main(int argc, char* argv[]) {
         if ( func(challengeInput) ) {
             ++challengesSuccesful;
         } //if ( func(challengeInput) )
+        else {
+            myPrint("Failed\n");
+        } //else -> if ( func(challengeInput ) )
         return;
     };
 
