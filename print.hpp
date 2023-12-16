@@ -18,4 +18,6 @@ void myErr(std::format_string<Args...> str, Args&&... args) {
     std::format_to(errIterator, str, std::forward<Args>(args)...);
 }
 
+void myFlush();
+
 #endif //PRINT_HPP

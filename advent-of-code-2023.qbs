@@ -21,6 +21,8 @@ Project {
             "challenge13.hpp",
             "challenge14.cpp",
             "challenge14.hpp",
+            "challenge15.cpp",
+            "challenge15.hpp",
             "challenge2.cpp",
             "challenge2.hpp",
             "challenge3.cpp",
