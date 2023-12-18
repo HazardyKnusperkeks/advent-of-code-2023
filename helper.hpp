@@ -22,19 +22,21 @@ constexpr auto splitString(const std::string_view data, const char delimiter) no
 
 void throwIfInvalid(bool valid, const char* msg = "Invalid Data");
 
+template<int Base = 10>
 inline std::optional<std::int64_t> convertOptionally(std::string_view input) {
-    if ( !std::isdigit(input[0]) && input[0] != '-' ) {
+    if ( Base == 10 && !std::isdigit(input[0]) && input[0] != '-' ) {
         return std::nullopt;
-    } //if ( !std::isdigit(input[0]) && input[0] != '-' )
+    } //if ( Base == 10 && !std::isdigit(input[0]) && input[0] != '-' )
 
     std::int64_t ret    = 0;
-    auto         result = std::from_chars(input.begin(), input.end(), ret);
+    auto         result = std::from_chars(input.begin(), input.end(), ret, Base);
     throwIfInvalid(result.ec == std::errc{});
     return result.ptr == input.data() ? std::nullopt : std::optional{ret};
 }
 
+template<int Base = 10>
 inline std::int64_t convert(std::string_view input) {
-    auto result = convertOptionally(input);
+    auto result = convertOptionally<Base>(input);
     throwIfInvalid(!!result);
     return *result;
 }
