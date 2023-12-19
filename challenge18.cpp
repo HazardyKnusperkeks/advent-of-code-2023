@@ -150,7 +150,6 @@ std::int64_t dig(const ParseResult& input) noexcept {
 bool challenge18(const std::vector<std::string_view>& rawInput) {
     auto area1 = dig(parse<false>(rawInput));
     myPrint(" == Result of Part 1: {:d} ==\n", area1);
-    myFlush();
 
     auto area2 = dig(parse<true>(rawInput));
     myPrint(" == Result of Part 2: {:d} ==\n", area2);
