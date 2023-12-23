@@ -12,6 +12,7 @@
 #include "challenge2.hpp"
 #include "challenge20.hpp"
 #include "challenge21.hpp"
+#include "challenge22.hpp"
 #include "challenge3.hpp"
 #include "challenge4.hpp"
 #include "challenge5.hpp"
@@ -142,6 +143,7 @@ int main(int argc, char* argv[]) {
                 case 19 : runAndAdd(challenge19); break;
                 case 20 : runAndAdd(challenge20); break;
                 case 21 : runAndAdd(challenge21); break;
+                case 22 : runAndAdd(challenge22); break;
 
                 default : {
                     --challengesRun;
@@ -165,7 +167,7 @@ int main(int argc, char* argv[]) {
     const auto overallDuration = overallEnd - overallStart;
     myPrint("After {} {:d} challenges correctly solved from {:d} ({:.2f}%)\n",
             std::chrono::duration_cast<std::chrono::milliseconds>(overallDuration), challengesSuccesful, challengesRun,
-            challengesSuccesful * 100. / challengesRun);
+            challengesSuccesful * 100. / std::max(challengesRun, 1));
 
     return 0;
 }
