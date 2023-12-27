@@ -238,26 +238,7 @@ bool challenge14(const std::vector<std::string_view>& input) {
     const auto map    = parse(input);
     auto       runMap = map;
 
-    auto printRange   = [](auto r) {
-        for ( char c : r ) {
-            myPrint("{}", c);
-        }
-        myPrint("\n");
-    };
-
-    //std::ranges::for_each(runMap.Data, printRange);
-    //myPrint("\nEast:\n");
-    //std::ranges::for_each(runMap.eastFirstRange(), printRange);
-    //myPrint("\nNorth:\n");
-    //std::ranges::for_each(runMap.northFirstRange(), printRange);
-    //myPrint("\nWest:\n");
-    //std::ranges::for_each(runMap.westFirstRange(), printRange);
-    //myPrint("\nSouth:\n");
-    //std::ranges::for_each(runMap.southFirstRange(), printRange);
-
     std::ranges::for_each(runMap.northFirstRange(), Tilt{});
-    //myPrint("\nFinal:\n");
-    //std::ranges::for_each(runMap.Data, printRange);
     std::int64_t sum1 =
         std::ranges::fold_left(runMap.southFirstRange() | std::views::transform(CalcLoad{}), 0, std::plus<>{});
     myPrint(" == Result of Part 1: {:d} ==\n", sum1);
@@ -265,7 +246,6 @@ bool challenge14(const std::vector<std::string_view>& input) {
     std::map<MapData, std::pair<MapData, int>> cache;
     MapData                                    prev;
     MapData                                    cacheCycleStartData;
-    int                                        cacheCycleStart = 0;
 
     runMap                                                     = map;
     const auto numberOfCycles                                  = 1'000'000'000;
@@ -273,18 +253,10 @@ bool challenge14(const std::vector<std::string_view>& input) {
     using Clock                                                = std::chrono::system_clock;
     const auto start                                           = Clock::now();
     for ( auto cycle = 1; cycle <= numberOfCycles; ++cycle ) {
-        if ( cycle % (numberOfCycles / 100) == 0 ) {
-            myPrint("{:d} Cycles after {}\n", cycle,
-                    std::chrono::duration_cast<std::chrono::seconds>(Clock::now() - start));
-            myFlush();
-        } //if ( cycle % (numberOfCycles / 100) == 0 )
-
         auto iter = cache.lower_bound(runMap.Data);
         if ( iter != cache.end() && iter->first == runMap.Data ) {
             const auto cycleLength     = cycle - iter->second.second;
             const auto remainingCycles = (numberOfCycles - cycle) % cycleLength;
-            myPrint("Cache Hit at Cycle {:d}, matches Cycle {:d} => Length {:d}, Remaining {:d}\n", cycle,
-                    iter->second.second, cycleLength, remainingCycles);
             runMap.Data = iter->second.first;
             cycle       = numberOfCycles - remainingCycles;
             continue;
@@ -298,119 +270,11 @@ bool challenge14(const std::vector<std::string_view>& input) {
         std::ranges::for_each(runMap.eastFirstRange(), Tilt{});
 
         cache.insert(iter, {prev, std::pair{runMap.Data, cycle}});
-        //myPrint("Mapping:\n");
-        //std::ranges::for_each(prev, printRange);
-        //myPrint("\nTo:\n");
-        //std::ranges::for_each(runMap.Data, printRange);
-        //myPrint("After {:d}\n", cycle);
     } //for ( auto cycle = 1; cycle <= numberOfCycles; ++cycle )
 
     std::int64_t sum2 =
         std::ranges::fold_left(runMap.southFirstRange() | std::views::transform(CalcLoad{}), 0, std::plus<>{});
     myPrint(" == Result of Part 2: {:d} ==\n", sum2);
 
-    return sum1 == 108935 && sum2 == 32854;
+    return sum1 == 108935 && sum2 == 100876;
 }
-
-/*
-Cycle: 0 after 0s
-Cycle: 10000000 after 8s
-Cycle: 20000000 after 16s
-Cycle: 30000000 after 24s
-Cycle: 40000000 after 33s
-Cycle: 50000000 after 41s
-Cycle: 60000000 after 49s
-Cycle: 70000000 after 58s
-Cycle: 80000000 after 66s
-Cycle: 90000000 after 74s
-Cycle: 100000000 after 83s
-Cycle: 110000000 after 91s
-Cycle: 120000000 after 100s
-Cycle: 130000000 after 108s
-Cycle: 140000000 after 116s
-Cycle: 150000000 after 125s
-Cycle: 160000000 after 133s
-Cycle: 170000000 after 142s
-Cycle: 180000000 after 150s
-Cycle: 190000000 after 158s
-Cycle: 200000000 after 167s
-Cycle: 210000000 after 175s
-Cycle: 220000000 after 183s
-Cycle: 230000000 after 192s
-Cycle: 240000000 after 200s
-Cycle: 250000000 after 209s
-Cycle: 260000000 after 217s
-Cycle: 270000000 after 225s
-Cycle: 280000000 after 234s
-Cycle: 290000000 after 242s
-Cycle: 300000000 after 250s
-Cycle: 310000000 after 259s
-Cycle: 320000000 after 267s
-Cycle: 330000000 after 275s
-Cycle: 340000000 after 284s
-Cycle: 350000000 after 292s
-Cycle: 360000000 after 301s
-Cycle: 370000000 after 309s
-Cycle: 380000000 after 317s
-Cycle: 390000000 after 326s
-Cycle: 400000000 after 334s
-Cycle: 410000000 after 342s
-Cycle: 420000000 after 351s
-Cycle: 430000000 after 359s
-Cycle: 440000000 after 368s
-Cycle: 450000000 after 376s
-Cycle: 460000000 after 384s
-Cycle: 470000000 after 393s
-Cycle: 480000000 after 401s
-Cycle: 490000000 after 410s
-Cycle: 500000000 after 418s
-Cycle: 510000000 after 426s
-Cycle: 520000000 after 435s
-Cycle: 530000000 after 443s
-Cycle: 540000000 after 452s
-Cycle: 550000000 after 460s
-Cycle: 560000000 after 469s
-Cycle: 570000000 after 477s
-Cycle: 580000000 after 486s
-Cycle: 590000000 after 494s
-Cycle: 600000000 after 502s
-Cycle: 610000000 after 511s
-Cycle: 620000000 after 519s
-Cycle: 630000000 after 528s
-Cycle: 640000000 after 536s
-Cycle: 650000000 after 545s
-Cycle: 660000000 after 554s
-Cycle: 670000000 after 562s
-Cycle: 680000000 after 571s
-Cycle: 690000000 after 579s
-Cycle: 700000000 after 588s
-Cycle: 710000000 after 596s
-Cycle: 720000000 after 605s
-Cycle: 730000000 after 614s
-Cycle: 740000000 after 622s
-Cycle: 750000000 after 631s
-Cycle: 760000000 after 639s
-Cycle: 770000000 after 648s
-Cycle: 780000000 after 656s
-Cycle: 790000000 after 665s
-Cycle: 800000000 after 674s
-Cycle: 810000000 after 682s
-Cycle: 820000000 after 691s
-Cycle: 830000000 after 699s
-Cycle: 840000000 after 708s
-Cycle: 850000000 after 717s
-Cycle: 860000000 after 725s
-Cycle: 870000000 after 734s
-Cycle: 880000000 after 742s
-Cycle: 890000000 after 751s
-Cycle: 900000000 after 760s
-Cycle: 910000000 after 768s
-Cycle: 920000000 after 777s
-Cycle: 930000000 after 785s
-Cycle: 940000000 after 794s
-Cycle: 950000000 after 803s
-Cycle: 960000000 after 811s
-Cycle: 970000000 after 820s
-Cycle: 980000000 after 828s
-Cycle: 990000000 after 837s
-*/
