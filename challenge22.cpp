@@ -1,5 +1,6 @@
 #include "challenge22.hpp"
 
+#include "coordinate3d.hpp"
 #include "helper.hpp"
 #include "print.hpp"
 #include "3rdParty/ctre/include/ctre.hpp"
@@ -8,29 +9,6 @@
 #include <array>
 #include <unordered_map>
 #include <unordered_set>
-
-namespace {
-template<typename T>
-struct Coordinate3D {
-    T X;
-    T Y;
-    T Z;
-
-    constexpr bool operator==(const Coordinate3D&) const noexcept  = default;
-    constexpr auto operator<=>(const Coordinate3D&) const noexcept = default;
-};
-} //namespace
-
-namespace std {
-template<typename T>
-struct hash<Coordinate3D<T>> {
-    size_t operator()(const Coordinate3D<T>& c) const noexcept {
-        constexpr auto bits = std::numeric_limits<T>::digits / 3;
-        constexpr auto mask = ((T{1} << bits) - 1);
-        return std::hash<T>{}((c.X << (2 * bits)) | ((c.Y & mask) << bits) | (c.Z & mask));
-    }
-};
-} //namespace std
 
 namespace {
 using BrickPos = Coordinate3D<std::uint16_t>;

@@ -55,6 +55,7 @@ Project {
             "challenge8.hpp",
             "challenge9.cpp",
             "challenge9.hpp",
+            "coordinate3d.hpp",
             "helper.cpp",
             "helper.hpp",
             "main.cpp",
