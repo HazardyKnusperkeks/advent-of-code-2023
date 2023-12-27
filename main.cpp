@@ -36,6 +36,8 @@
 #include <string_view>
 #include <vector>
 
+using namespace std::string_view_literals;
+
 /**
  * @brief Hauptfunktion.
  * @author Björn Schäpers
@@ -44,7 +46,7 @@
  * @param[in] argv Die Werte der Argumente.
  * @result 0 bei Erfolg.
  */
-int main(int argc, char* argv[]) {
+int main(int argc, const char* argv[]) {
     if ( argc < 3 ) {
         myErr("Not enough parameters!");
         return -1;
@@ -57,9 +59,18 @@ int main(int argc, char* argv[]) {
         return -2;
     } //if ( !std::filesystem::exists(dataDirectory) )
 
-    using Clock = std::chrono::system_clock;
+    using Clock            = std::chrono::system_clock;
 
-    const std::span               inputs{argv + 2, argv + argc};
+    const std::span inputs = [&argc, &argv](void) noexcept {
+        std::span ret{argv + 2, argv + argc};
+        if ( ret.size() == 1 && ret[0] == "0"sv ) {
+            static std::array<const char*, 25> all{"1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",
+                                                   "10", "11", "12", "13", "14", "15", "16", "17", "18",
+                                                   "19", "20", "21", "22", "23", "24", "25"};
+            ret = std::span{all.data(), all.size()};
+        } //if ( ret.size() == 1 && ret[0] == "0"sv )
+        return ret;
+    }();
     std::vector<std::string_view> challengeInput;
     const auto                    overallStart        = Clock::now();
     int                           challengesRun       = 0;
