@@ -1,3 +1,6 @@
 [submodule "3rdParty/ctre"]
 	path = 3rdParty/ctre
 	url = https://github.com/hanickadot/compile-time-regular-expressions.git
+[submodule "3rdParty/boost"]
+	path = 3rdParty/boost
+	url = https://github.com/boostorg/boost.git

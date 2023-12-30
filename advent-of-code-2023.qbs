@@ -5,6 +5,31 @@ Project {
 
     references: ["allWarnings.qbs"]
 
+    Product {
+        name: "Boost.Multiprecision"
+
+        Export {
+            Depends { name: "cpp" }
+            cpp.systemIncludePaths: [
+                "3rdParty/boost/libs/config/include",
+                "3rdParty/boost/libs/multiprecision/include",
+            ]
+        }
+    }
+
+    Product {
+        name: "Boost.Integer"
+
+        Export {
+            Depends { name: "cpp" }
+            cpp.systemIncludePaths: [
+                "3rdParty/boost/libs/assert/include",
+                "3rdParty/boost/libs/core/include",
+                "3rdParty/boost/libs/integer/include",
+            ]
+        }
+    }
+
     CppApplication {
         consoleApplication: true
         files: [
@@ -41,6 +66,8 @@ Project {
             "challenge22.hpp",
             "challenge23.cpp",
             "challenge23.hpp",
+            "challenge24.cpp",
+            "challenge24.hpp",
             "challenge3.cpp",
             "challenge3.hpp",
             "challenge4.cpp",
@@ -65,6 +92,8 @@ Project {
 
         Depends { name: "AllWarnings" }
         Depends { name: "cpp" }
+        Depends { name: "Boost.Integer" }
+        Depends { name: "Boost.Multiprecision" }
 
         cpp.cxxLanguageVersion: "c++23"
         cpp.cxxFlags: ["-fconcepts-diagnostics-depth=10"]

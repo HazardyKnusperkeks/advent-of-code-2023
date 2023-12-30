@@ -41,4 +41,12 @@ inline std::int64_t convert(std::string_view input) {
     return *result;
 }
 
+inline double convertDouble(std::string_view input) {
+    double ret    = 0.;
+    auto   result = std::from_chars(input.begin(), input.end(), ret);
+    throwIfInvalid(result.ec == std::errc{});
+    throwIfInvalid(result.ptr != input.data());
+    return ret;
+}
+
 #endif //HELPER_HPP

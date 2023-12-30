@@ -14,6 +14,7 @@
 #include "challenge21.hpp"
 #include "challenge22.hpp"
 #include "challenge23.hpp"
+#include "challenge24.hpp"
 #include "challenge3.hpp"
 #include "challenge4.hpp"
 #include "challenge5.hpp"
@@ -157,6 +158,7 @@ int main(int argc, const char* argv[]) {
                 case 21 : runAndAdd(challenge21); break;
                 case 22 : runAndAdd(challenge22); break;
                 case 23 : runAndAdd(challenge23); break;
+                case 24 : runAndAdd(challenge24); break;
 
                 default : {
                     --challengesRun;

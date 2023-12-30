@@ -12,6 +12,33 @@ struct Coordinate3D {
 
     constexpr bool operator==(const Coordinate3D&) const noexcept  = default;
     constexpr auto operator<=>(const Coordinate3D&) const noexcept = default;
+
+    constexpr Coordinate3D operator-(void) const noexcept {
+        return {-X, -Y, -Z};
+    }
+
+    constexpr Coordinate3D operator+(const Coordinate3D& that) const noexcept {
+        return {X + that.X, Y + that.Y, Z + that.Z};
+    }
+
+    constexpr Coordinate3D operator-(const Coordinate3D& that) const noexcept {
+        return {X - that.X, Y - that.Y, Z - that.Z};
+    }
+
+    template<typename U>
+    constexpr Coordinate3D operator*(U t) const noexcept {
+        return {t * X, t * Y, t * Z};
+    }
+
+    template<typename U>
+    constexpr Coordinate3D operator/(U t) const noexcept {
+        return {X / t, Y / t, Z / t};
+    }
+
+    template<typename U>
+    friend constexpr Coordinate3D operator*(U t, const Coordinate3D& c) noexcept {
+        return c * t;
+    }
 };
 
 namespace std {
